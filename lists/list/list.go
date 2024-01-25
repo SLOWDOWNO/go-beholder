@@ -2,6 +2,7 @@ package list
 
 import (
 	"fmt"
+	"go-beholder/utils"
 	"strings"
 )
 
@@ -128,6 +129,13 @@ func (list *List) IndexOf(value interface{}) int {
 		}
 	}
 	return -1
+}
+
+func (list *List) Sort(comparator utils.Comparator) {
+	if len(list.elements) < 2 {
+		return
+	}
+	utils.Sort(list.elements[:list.size], comparator)
 }
 
 // Empty returns true if list does not contain any elements.

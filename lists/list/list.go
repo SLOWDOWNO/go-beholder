@@ -2,9 +2,13 @@ package list
 
 import (
 	"fmt"
+	"go-beholder/lists"
 	"go-beholder/utils"
 	"strings"
 )
+
+// _ is an assertion to ensure that *List implements the lists.List interface.
+var _ lists.List = (*List)(nil)
 
 type List struct {
 	elements []interface{}

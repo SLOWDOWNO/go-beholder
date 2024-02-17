@@ -48,6 +48,18 @@ func (list *List) Add(values ...interface{}) {
 	}
 }
 
+// Add adds the specified values to the head of the list.
+func (list *List) AddToHead(values ...interface{}) {
+	for v := len(values) - 1; v >= 0; v-- {
+		newNode := &node{value: values[v], next: list.first}
+		list.first = newNode
+		if list.size == 0 {
+			list.tail = newNode
+		}
+		list.size++
+	}
+}
+
 // Get retrieves the value at the specified index in the list.
 func (list *List) Get(index int) (interface{}, bool) {
 	if !list.isValidIndex(index) {

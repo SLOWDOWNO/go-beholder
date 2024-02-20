@@ -1,56 +1,53 @@
 package list_test
 
 import (
-	"go-beholder/lists/list"
+	"go-beholder/lists/linkedlist"
 	"testing"
 )
 
 func TestListNew(t *testing.T) {
+	list1 := linkedlist.New[int]()
 
-	l1 := list.New()
-	if actualValue := l1.Empty(); actualValue != true {
+	if actualValue := list1.Empty(); actualValue != true {
 		t.Errorf("Got %v expected %v", actualValue, true)
 	}
 
-	l2 := list.New("a", "b", 1)
-	if actualValue := l2.Size(); actualValue != 3 {
-		t.Errorf("Got %v expected %v", actualValue, 3)
+	list2 := linkedlist.New[int](1, 2)
+
+	if actualValue := list2.Size(); actualValue != 2 {
+		t.Errorf("Got %v expected %v", actualValue, 2)
 	}
 
-	if actualValue, ok := l2.Get(0); actualValue != "a" || !ok {
-		t.Errorf("Got %v expected %v", actualValue, "a")
-	}
-
-	if actualValue, ok := l2.Get(1); actualValue != "b" || !ok {
-		t.Errorf("Got %v expected %v", actualValue, "b")
-	}
-
-	if actualValue, ok := l2.Get(2); actualValue != 1 || !ok {
+	if actualValue, ok := list2.Get(0); actualValue != 1 || !ok {
 		t.Errorf("Got %v expected %v", actualValue, 1)
+	}
+
+	if actualValue, ok := list2.Get(1); actualValue != 2 || !ok {
+		t.Errorf("Got %v expected %v", actualValue, 2)
+	}
+
+	if actualValue, ok := list2.Get(2); actualValue != 0 || ok {
+		t.Errorf("Got %v expected %v", actualValue, 0)
 	}
 }
 
 func TestListAdd(t *testing.T) {
-
-	list := list.New()
+	list := linkedlist.New[string]()
 	list.Add("a")
 	list.Add("b", "c")
-
 	if actualValue := list.Empty(); actualValue != false {
 		t.Errorf("Got %v expected %v", actualValue, false)
 	}
-
 	if actualValue := list.Size(); actualValue != 3 {
 		t.Errorf("Got %v expected %v", actualValue, 3)
 	}
-
 	if actualValue, ok := list.Get(2); actualValue != "c" || !ok {
 		t.Errorf("Got %v expected %v", actualValue, "c")
 	}
 }
 
 func TestListIndexOf(t *testing.T) {
-	list := list.New()
+	list := linkedlist.New[string]()
 
 	expectedIndex := -1
 	if index := list.IndexOf("a"); index != expectedIndex {
@@ -77,12 +74,12 @@ func TestListIndexOf(t *testing.T) {
 }
 
 func TestListRemove(t *testing.T) {
-	list := list.New()
+	list := linkedlist.New[string]()
 	list.Add("a")
 	list.Add("b", "c")
 	list.Remove(2)
-	if actualValue, ok := list.Get(2); actualValue != nil || ok {
-		t.Errorf("Got %v expected %v", actualValue, nil)
+	if actualValue, ok := list.Get(2); actualValue != "" || ok {
+		t.Errorf("Got %v expected %v", actualValue, "")
 	}
 	list.Remove(1)
 	list.Remove(0)

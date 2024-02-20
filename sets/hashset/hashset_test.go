@@ -6,7 +6,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	set := hashset.New(1, 2)
+	set := hashset.New[int](1, 2)
 
 	if value := set.Size(); value != 2 {
 		t.Errorf("Got %v but expected %v", value, 2)
@@ -23,7 +23,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestSetAdd(t *testing.T) {
-	set := hashset.New()
+	set := hashset.New[int]()
 	set.Add()
 	set.Add(1)
 	set.Add(2)
@@ -38,7 +38,7 @@ func TestSetAdd(t *testing.T) {
 }
 
 func TestSetRemove(t *testing.T) {
-	set := hashset.New()
+	set := hashset.New[int]()
 	set.Add(3, 1, 2)
 	set.Remove()
 	if actualValue := set.Size(); actualValue != 3 {
@@ -58,7 +58,7 @@ func TestSetRemove(t *testing.T) {
 }
 
 func TestSetContains(t *testing.T) {
-	set := hashset.New()
+	set := hashset.New[int]()
 	set.Add(3, 1, 2)
 	set.Add(2, 3)
 	set.Add()

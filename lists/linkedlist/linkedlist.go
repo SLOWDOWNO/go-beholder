@@ -2,31 +2,35 @@ package linkedlist
 
 import (
 	"fmt"
+	"go-beholder/lists"
 	"go-beholder/utils"
+	"slices"
 	"strings"
 )
 
+var _ lists.List[int] = (*List[int])(nil)
+
 // List represents a singly linked list data structure.
-type List struct {
-	first *node // Pointer to the first node in the list.
-	tail  *node // Pointer to the last node in the list.
-	size  int   // Number of elements in the list.
+type List[T comparable] struct {
+	first *node[T] // Pointer to the first node in the list.
+	tail  *node[T] // Pointer to the last node in the list.
+	size  int      // Number of elements in the list.
 }
 
 // node represents a node in the linked list.。
-type node struct {
-	value interface{} // Value stored in the node.
-	next  *node       // Pointer to the next node in the list.
+type node[T comparable] struct {
+	value T        // Value stored in the node.
+	next  *node[T] // Pointer to the next node in the list.
 }
 
 // isValidIndex checks if the given index is valid for the list.
-func (list *List) isValidIndex(index int) bool {
+func (list *List[T]) isValidIndex(index int) bool {
 	return index >= 0 && index < list.size
 }
 
 // New creates and returns a new List instance with the provided values.
-func New(values ...interface{}) *List {
-	list := &List{}
+func New[T comparable](values ...T) *List[T] {
+	list := &List[T]{}
 	if len(values) > 0 {
 		list.Add(values...)
 	}
@@ -34,9 +38,9 @@ func New(values ...interface{}) *List {
 }
 
 // Add adds the specified values to the end of the list.
-func (list *List) Add(values ...interface{}) {
+func (list *List[T]) Add(values ...T) {
 	for _, value := range values {
-		newNode := &node{value: value}
+		newNode := &node[T]{value: value}
 		if list.size == 0 {
 			list.first = newNode
 			list.tail = newNode
@@ -49,9 +53,9 @@ func (list *List) Add(values ...interface{}) {
 }
 
 // Add adds the specified values to the head of the list.
-func (list *List) AddToHead(values ...interface{}) {
+func (list *List[T]) AddToHead(values ...T) {
 	for v := len(values) - 1; v >= 0; v-- {
-		newNode := &node{value: values[v], next: list.first}
+		newNode := &node[T]{value: values[v], next: list.first}
 		list.first = newNode
 		if list.size == 0 {
 			list.tail = newNode
@@ -61,9 +65,10 @@ func (list *List) AddToHead(values ...interface{}) {
 }
 
 // Get retrieves the value at the specified index in the list.
-func (list *List) Get(index int) (interface{}, bool) {
+func (list *List[T]) Get(index int) (T, bool) {
 	if !list.isValidIndex(index) {
-		return nil, false
+		var t T
+		return t, false
 	}
 	node := list.first
 	for e := 0; e != index; e, node = e+1, node.next {
@@ -72,7 +77,7 @@ func (list *List) Get(index int) (interface{}, bool) {
 }
 
 // Remove removes the value at the specified index from the list.
-func (list *List) Remove(index int) {
+func (list *List[T]) Remove(index int) {
 	if !list.isValidIndex(index) {
 		return
 	}
@@ -82,7 +87,7 @@ func (list *List) Remove(index int) {
 		return
 	}
 
-	var beforeNode *node
+	var beforeNode *node[T]
 	node := list.first
 	for e := 0; e != index; e, node = e+1, node.next {
 		beforeNode = node
@@ -104,7 +109,7 @@ func (list *List) Remove(index int) {
 }
 
 // Contains checks if the list contains all of the specified values.
-func (list *List) Contains(values ...interface{}) bool {
+func (list *List[T]) Contains(values ...T) bool {
 	if len(values) == 0 {
 		return true
 	}
@@ -128,20 +133,21 @@ func (list *List) Contains(values ...interface{}) bool {
 }
 
 // Sort sorts the elements of the list using the provided comparator function.
-func (list *List) Sort(comparator utils.Comparator) {
+func (list *List[T]) Sort(comparator utils.Comparator[T]) {
 	if list.size < 2 {
 		return
 	}
 	values := list.Values()
-	utils.Sort(values, comparator)
+
+	slices.SortFunc(values, comparator)
 	list.Clear()
 	list.Add(values...)
 }
 
 // Swap swaps the values at the specified indices in the list.
-func (list *List) Swap(i, j int) {
+func (list *List[T]) Swap(i, j int) {
 	if list.isValidIndex(i) && list.isValidIndex(j) && i != j {
-		var node1, node2 *node
+		var node1, node2 *node[T]
 		for e, cur := 0, list.first; node1 == nil || node2 == nil; e, cur = e+1, cur.next {
 			switch e {
 			case i:
@@ -155,7 +161,7 @@ func (list *List) Swap(i, j int) {
 }
 
 // Insert inserts the specified values at the specified index in the list.
-func (list *List) Insert(index int, values ...interface{}) {
+func (list *List[T]) Insert(index int, values ...T) {
 	if !list.isValidIndex(index) {
 		if index == list.size {
 			list.Add(values...)
@@ -165,7 +171,7 @@ func (list *List) Insert(index int, values ...interface{}) {
 
 	list.size += len(values)
 
-	var beforeNode *node
+	var beforeNode *node[T]
 	cur := list.first
 	for e := 0; e != index; e, cur = e+1, cur.next {
 		beforeNode = cur
@@ -174,7 +180,7 @@ func (list *List) Insert(index int, values ...interface{}) {
 	if cur == list.first {
 		oldNextElement := list.first
 		for i, value := range values {
-			newNode := &node{value: value}
+			newNode := &node[T]{value: value}
 			if i == 0 {
 				list.first = newNode
 			} else {
@@ -186,7 +192,7 @@ func (list *List) Insert(index int, values ...interface{}) {
 	} else {
 		oldNextElement := beforeNode.next
 		for _, value := range values {
-			newNode := &node{value: value}
+			newNode := &node[T]{value: value}
 			beforeNode.next = newNode
 			beforeNode = newNode
 		}
@@ -195,7 +201,7 @@ func (list *List) Insert(index int, values ...interface{}) {
 }
 
 // Set sets the value at the specified index in the list.
-func (list *List) Set(index int, value interface{}) {
+func (list *List[T]) Set(index int, value T) {
 	if !list.isValidIndex(index) {
 		if list.size == index {
 			list.Add(value)
@@ -210,35 +216,33 @@ func (list *List) Set(index int, value interface{}) {
 }
 
 // Empty checks if the list is empty.
-func (list *List) Empty() bool {
+func (list *List[T]) Empty() bool {
 	return list.size == 0
 }
 
 // Size returns the number of elements in the list.
-func (list *List) Size() int {
+func (list *List[T]) Size() int {
 	return list.size
 }
 
 // Clear removes all elements from the list.
-func (list *List) Clear() {
+func (list *List[T]) Clear() {
 	list.size = 0
 	list.first = nil
 	list.tail = nil
 }
 
 // Values returns a slice containing all the values in the list.
-func (list *List) Values() []interface{} {
-	values := make([]interface{}, list.size)
-	for i, cur :=
-
-		0, list.first; cur != nil; i, cur = i+1, cur.next {
+func (list *List[T]) Values() []T {
+	values := make([]T, list.size)
+	for i, cur := 0, list.first; cur != nil; i, cur = i+1, cur.next {
 		values[i] = cur.value
 	}
 	return values
 }
 
 // IndexOf returns the index of the first occurrence of the specified value in the list, or -1 if not found.
-func (list *List) IndexOf(value interface{}) int {
+func (list *List[T]) IndexOf(value T) int {
 	if list.size == 0 {
 		return -1
 	}
@@ -251,7 +255,7 @@ func (list *List) IndexOf(value interface{}) int {
 }
 
 // String returns a string representation of the list.
-func (list *List) String() string {
+func (list *List[T]) String() string {
 	str := "[LinkedList]\n"
 	values := []string{}
 	for cur := list.first; cur != nil; cur = cur.next {

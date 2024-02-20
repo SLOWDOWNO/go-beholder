@@ -6,7 +6,7 @@ import (
 )
 
 func TestQueueEnqueue(t *testing.T) {
-	queue := linkedlistqueue.New()
+	queue := linkedlistqueue.New[int]()
 	if actualValue := queue.Empty(); actualValue != true {
 		t.Errorf("Got %v expected %v", actualValue, true)
 	}
@@ -14,7 +14,7 @@ func TestQueueEnqueue(t *testing.T) {
 	queue.Enqueue(2)
 	queue.Enqueue(3)
 
-	if actualValue := queue.Values(); actualValue[0].(int) != 1 || actualValue[1].(int) != 2 || actualValue[2].(int) != 3 {
+	if actualValue := queue.Values(); actualValue[0] != 1 || actualValue[1] != 2 || actualValue[2] != 3 {
 		t.Errorf("Got %v expected %v", actualValue, "[1,2,3]")
 	}
 	if actualValue := queue.Empty(); actualValue != false {
@@ -29,8 +29,8 @@ func TestQueueEnqueue(t *testing.T) {
 }
 
 func TestQueuePeek(t *testing.T) {
-	queue := linkedlistqueue.New()
-	if actualValue, ok := queue.Peek(); actualValue != nil || ok {
+	queue := linkedlistqueue.New[int]()
+	if actualValue, ok := queue.Peek(); actualValue != 0 || ok {
 		t.Errorf("Got %v expected %v", actualValue, nil)
 	}
 	queue.Enqueue(1)
@@ -42,7 +42,7 @@ func TestQueuePeek(t *testing.T) {
 }
 
 func TestQueueDequeue(t *testing.T) {
-	queue := linkedlistqueue.New()
+	queue := linkedlistqueue.New[int]()
 	queue.Enqueue(1)
 	queue.Enqueue(2)
 	queue.Enqueue(3)
@@ -56,7 +56,7 @@ func TestQueueDequeue(t *testing.T) {
 	if actualValue, ok := queue.Dequeue(); actualValue != 3 || !ok {
 		t.Errorf("Got %v expected %v", actualValue, 3)
 	}
-	if actualValue, ok := queue.Dequeue(); actualValue != nil || ok {
+	if actualValue, ok := queue.Dequeue(); actualValue != 0 || ok {
 		t.Errorf("Got %v expected %v", actualValue, nil)
 	}
 	if actualValue := queue.Empty(); actualValue != true {

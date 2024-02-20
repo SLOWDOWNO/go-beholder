@@ -6,7 +6,7 @@ import (
 )
 
 func TestStackPush(t *testing.T) {
-	stack := stack.New()
+	stack := stack.New[int]()
 	if actualValue := stack.Empty(); actualValue != true {
 		t.Errorf("Got %v expected %v", actualValue, true)
 	}
@@ -14,7 +14,7 @@ func TestStackPush(t *testing.T) {
 	stack.Push(2)
 	stack.Push(3)
 
-	if actualValue := stack.Values(); actualValue[0].(int) != 3 || actualValue[1].(int) != 2 || actualValue[2].(int) != 1 {
+	if actualValue := stack.Values(); actualValue[0] != 3 || actualValue[1] != 2 || actualValue[2] != 1 {
 		t.Errorf("Got %v expected %v", actualValue, "[3,2,1]")
 	}
 	if actualValue := stack.Empty(); actualValue != false {
@@ -29,8 +29,8 @@ func TestStackPush(t *testing.T) {
 }
 
 func TestStackPeek(t *testing.T) {
-	stack := stack.New()
-	if actualValue, ok := stack.Peek(); actualValue != nil || ok {
+	stack := stack.New[int]()
+	if actualValue, ok := stack.Peek(); actualValue != 0 || ok {
 		t.Errorf("Got %v expected %v", actualValue, nil)
 	}
 	stack.Push(1)
@@ -42,7 +42,7 @@ func TestStackPeek(t *testing.T) {
 }
 
 func TestStackPop(t *testing.T) {
-	stack := stack.New()
+	stack := stack.New[int]()
 	stack.Push(1)
 	stack.Push(2)
 	stack.Push(3)
@@ -56,7 +56,7 @@ func TestStackPop(t *testing.T) {
 	if actualValue, ok := stack.Pop(); actualValue != 1 || !ok {
 		t.Errorf("Got %v expected %v", actualValue, 1)
 	}
-	if actualValue, ok := stack.Pop(); actualValue != nil || ok {
+	if actualValue, ok := stack.Pop(); actualValue != 0 || ok {
 		t.Errorf("Got %v expected %v", actualValue, nil)
 	}
 	if actualValue := stack.Empty(); actualValue != true {

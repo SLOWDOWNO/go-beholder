@@ -1,12 +1,12 @@
 package containers
 
 // IteratorWithIndex is an interface that represents an iterator with index.
-type IteratorWithIndex interface {
+type IteratorWithIndex[T any] interface {
 	// Next advances the iterator to the next element and returns true if there is a next element, false otherwise.
 	Next() bool
 
 	// Values returns the current element of the iterator.
-	Values() interface{}
+	Values() T
 
 	// Index returns the index of the current element.
 	Index() int
@@ -19,7 +19,7 @@ type IteratorWithIndex interface {
 }
 
 // RevIteratorWithIndex is an interface that represents a reverse iterator with index.
-type RevIteratorWithIndex interface {
+type RevIteratorWithIndex[T any] interface {
 	// Prev moves the iterator to the previous element and returns true if there is a previous element, false otherwise.
 	Prev() bool
 
@@ -29,5 +29,5 @@ type RevIteratorWithIndex interface {
 	// Last moves the iterator to the last element and returns true if there is a last element, false otherwise.
 	Last() bool
 
-	IteratorWithIndex
+	IteratorWithIndex[T]
 }

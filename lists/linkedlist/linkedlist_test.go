@@ -1,20 +1,21 @@
 package linkedlist_test
 
 import (
-	"fmt"
+	"cmp"
 	"go-beholder/lists/linkedlist"
-	"go-beholder/utils"
+	"slices"
+	"strings"
 	"testing"
 )
 
 func TestListNew(t *testing.T) {
-	list1 := linkedlist.New()
+	list1 := linkedlist.New[int]()
 
 	if actualValue := list1.Empty(); actualValue != true {
 		t.Errorf("Got %v expected %v", actualValue, true)
 	}
 
-	list2 := linkedlist.New(1, "b")
+	list2 := linkedlist.New[int](1, 2)
 
 	if actualValue := list2.Size(); actualValue != 2 {
 		t.Errorf("Got %v expected %v", actualValue, 2)
@@ -24,17 +25,17 @@ func TestListNew(t *testing.T) {
 		t.Errorf("Got %v expected %v", actualValue, 1)
 	}
 
-	if actualValue, ok := list2.Get(1); actualValue != "b" || !ok {
-		t.Errorf("Got %v expected %v", actualValue, "b")
+	if actualValue, ok := list2.Get(1); actualValue != 2 || !ok {
+		t.Errorf("Got %v expected %v", actualValue, 2)
 	}
 
-	if actualValue, ok := list2.Get(2); actualValue != nil || ok {
-		t.Errorf("Got %v expected %v", actualValue, nil)
+	if actualValue, ok := list2.Get(2); actualValue != 0 || ok {
+		t.Errorf("Got %v expected %v", actualValue, 0)
 	}
 }
 
 func TestListAdd(t *testing.T) {
-	list := linkedlist.New()
+	list := linkedlist.New[string]()
 	list.Add("a")
 	list.Add("b", "c")
 	if actualValue := list.Empty(); actualValue != false {
@@ -49,7 +50,7 @@ func TestListAdd(t *testing.T) {
 }
 
 func TestListGet(t *testing.T) {
-	list := linkedlist.New()
+	list := linkedlist.New[string]()
 	list.Add("a")
 	list.Add("b", "c")
 	if actualValue, ok := list.Get(0); actualValue != "a" || !ok {
@@ -61,8 +62,8 @@ func TestListGet(t *testing.T) {
 	if actualValue, ok := list.Get(2); actualValue != "c" || !ok {
 		t.Errorf("Got %v expected %v", actualValue, "c")
 	}
-	if actualValue, ok := list.Get(3); actualValue != nil || ok {
-		t.Errorf("Got %v expected %v", actualValue, nil)
+	if actualValue, ok := list.Get(3); actualValue != "" || ok {
+		t.Errorf("Got %v expected %v", actualValue, "")
 	}
 	list.Remove(0)
 	if actualValue, ok := list.Get(0); actualValue != "b" || !ok {
@@ -71,12 +72,12 @@ func TestListGet(t *testing.T) {
 }
 
 func TestListRemove(t *testing.T) {
-	list := linkedlist.New()
+	list := linkedlist.New[string]()
 	list.Add("a")
 	list.Add("b", "c")
 	list.Remove(2)
-	if actualValue, ok := list.Get(2); actualValue != nil || ok {
-		t.Errorf("Got %v expected %v", actualValue, nil)
+	if actualValue, ok := list.Get(2); actualValue != "" || ok {
+		t.Errorf("Got %v expected %v", actualValue, "")
 	}
 	list.Remove(1)
 	list.Remove(0)
@@ -90,7 +91,7 @@ func TestListRemove(t *testing.T) {
 }
 
 func TestListContains(t *testing.T) {
-	list := linkedlist.New()
+	list := linkedlist.New[string]()
 	list.Add("a")
 	list.Add("b", "c")
 	if actualValue := list.Contains("a"); actualValue != true {
@@ -112,21 +113,21 @@ func TestListContains(t *testing.T) {
 }
 
 func TestListSort(t *testing.T) {
-	list := linkedlist.New()
-	list.Sort(utils.StringComparator)
+	list := linkedlist.New[string]()
+	list.Sort(cmp.Compare[string])
 	list.Add("e", "f", "g", "a", "b", "c", "d")
-	list.Sort(utils.StringComparator)
+	list.Sort(cmp.Compare[string])
 	for i := 1; i < list.Size(); i++ {
 		a, _ := list.Get(i - 1)
 		b, _ := list.Get(i)
-		if a.(string) > b.(string) {
+		if a > b {
 			t.Errorf("Not sorted! %s > %s", a, b)
 		}
 	}
 }
 
 func TestListSwap(t *testing.T) {
-	list := linkedlist.New()
+	list := linkedlist.New[string]()
 	list.Add("a")
 	list.Add("b", "c")
 	list.Swap(0, 1)
@@ -136,7 +137,7 @@ func TestListSwap(t *testing.T) {
 }
 
 func TestListSet(t *testing.T) {
-	list := linkedlist.New()
+	list := linkedlist.New[string]()
 	list.Set(0, "a")
 	list.Set(1, "b")
 	if actualValue := list.Size(); actualValue != 2 {
@@ -151,13 +152,13 @@ func TestListSet(t *testing.T) {
 	if actualValue := list.Size(); actualValue != 3 {
 		t.Errorf("Got %v expected %v", actualValue, 3)
 	}
-	if actualValue, expectedValue := fmt.Sprintf("%s%s%s", list.Values()...), "abbc"; actualValue != expectedValue {
+	if actualValue, expectedValue := list.Values(), []string{"a", "bb", "c"}; !slices.Equal(actualValue, expectedValue) {
 		t.Errorf("Got %v expected %v", actualValue, expectedValue)
 	}
 }
 
 func TestListInsert(t *testing.T) {
-	list := linkedlist.New()
+	list := linkedlist.New[string]()
 	list.Insert(0, "b", "c")
 	list.Insert(0, "a")
 	list.Insert(10, "x") // ignore
@@ -168,7 +169,7 @@ func TestListInsert(t *testing.T) {
 	if actualValue := list.Size(); actualValue != 4 {
 		t.Errorf("Got %v expected %v", actualValue, 4)
 	}
-	if actualValue, expectedValue := fmt.Sprintf("%s%s%s%s", list.Values()...), "abcd"; actualValue != expectedValue {
+	if actualValue, expectedValue := strings.Join(list.Values(), ""), "abcd"; actualValue != expectedValue {
 		t.Errorf("Got %v expected %v", actualValue, expectedValue)
 	}
 }

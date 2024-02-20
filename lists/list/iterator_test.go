@@ -6,7 +6,7 @@ import (
 )
 
 func TestListIteratorNextOnEmpty(t *testing.T) {
-	list := list.New()
+	list := list.New[string]()
 	it := list.Iterator()
 	for it.Next() {
 		t.Errorf("Shouldn't iterate on empty list")
@@ -14,7 +14,7 @@ func TestListIteratorNextOnEmpty(t *testing.T) {
 }
 
 func TestListIteratorNext(t *testing.T) {
-	list := list.New()
+	list := list.New[string]()
 	list.Add("a", "b", "c")
 	it := list.Iterator()
 	count := 0

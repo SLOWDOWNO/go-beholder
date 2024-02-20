@@ -7,19 +7,19 @@ import (
 )
 
 // _ is an assertion to ensure that *Set implements the sets.Set interface.
-var _ sets.Set = (*Set)(nil)
+var _ sets.Set[int] = (*Set[int])(nil)
 
 // Set represents a set data structure.
-type Set struct {
-	items map[interface{}]struct{}
+type Set[T comparable] struct {
+	items map[T]struct{}
 }
 
 // placeholder is a singleton struct used as a placeholder value.
 var placeholder = struct{}{}
 
 // New creates and returns a new set instance initialized with the provided values.
-func New(values ...interface{}) *Set {
-	set := &Set{items: make(map[interface{}]struct{})}
+func New[T comparable](values ...T) *Set[T] {
+	set := &Set[T]{items: make(map[T]struct{})}
 	if len(values) > 0 {
 		set.Add(values...)
 	}
@@ -27,21 +27,21 @@ func New(values ...interface{}) *Set {
 }
 
 // Add adds the specified items to the set.
-func (set *Set) Add(items ...interface{}) {
+func (set *Set[T]) Add(items ...T) {
 	for _, item := range items {
 		set.items[item] = placeholder
 	}
 }
 
 // Remove removes specified items from set.
-func (set *Set) Remove(items ...interface{}) {
+func (set *Set[T]) Remove(items ...T) {
 	for _, item := range items {
 		delete(set.items, item)
 	}
 }
 
 // Contains checks whether the set contains all the specified items.
-func (set *Set) Contains(items ...interface{}) bool {
+func (set *Set[T]) Contains(items ...T) bool {
 	for _, item := range items {
 		if _, contains := set.items[item]; !contains {
 			return false
@@ -51,23 +51,23 @@ func (set *Set) Contains(items ...interface{}) bool {
 }
 
 // Empty checks if the set is empty.
-func (set *Set) Empty() bool {
+func (set *Set[T]) Empty() bool {
 	return set.Size() == 0
 }
 
 // Size returns the number of items in the set.
-func (set *Set) Size() int {
+func (set *Set[T]) Size() int {
 	return len(set.items)
 }
 
 // Clear removes all items from the set, making it empty.
-func (set *Set) Clear() {
-	set.items = make(map[interface{}]struct{})
+func (set *Set[T]) Clear() {
+	set.items = make(map[T]struct{})
 }
 
 // Values returns a slice containing all the items in the set.
-func (set *Set) Values() []interface{} {
-	values := make([]interface{}, set.Size())
+func (set *Set[T]) Values() []T {
+	values := make([]T, set.Size())
 	cnt := 0
 	for item := range set.items {
 		values[cnt] = item
@@ -77,7 +77,7 @@ func (set *Set) Values() []interface{} {
 }
 
 // String returns a string representation of the set.
-func (set *Set) String() string {
+func (set *Set[T]) String() string {
 	str := "[HashSet]\n"
 	items := []string{}
 	for key := range set.items {

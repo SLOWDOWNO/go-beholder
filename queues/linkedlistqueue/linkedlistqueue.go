@@ -61,7 +61,7 @@ func (queue *Queue[T]) Values() []T {
 
 // String returns a string representation of the queue.
 func (queue *Queue[T]) String() string {
-	str := "[LinkedListQueue\n]"
+	str := "[LinkedListQueue]\n"
 	values := []string{}
 	for _, value := range queue.list.Values() {
 		values = append(values, fmt.Sprintf("%v ", value))
